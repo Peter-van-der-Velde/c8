@@ -12,7 +12,15 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
+	initialize();
 	read_rom(argv[1]);
+
+	int i = 0;
+	while(1) {
+		if (i % 10000 == 0)
+			debug("cycle: %d", i++);
+		emulate_cycle();
+	}
 
 	return 0;
 }

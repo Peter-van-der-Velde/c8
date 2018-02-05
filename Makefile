@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS=-g -O2 -Wall -Wextra -Isrc -rdynamic -DNDEBUG $(OPTFLAGS)
-LIBS=-ldl $(OPTLIBS)
+LIBS=-ldl -lSDL2 $(OPTLIBS)
 PREFIX?=/usr/local
 
 SOURCES=$(wildcard src/**/*.c src/*.c)
@@ -19,7 +19,7 @@ dev: CFLAGS=-g -Wall -Isrc -Wall -Wextra $(OPTFLAGS)
 dev: all
 
 $(TARGET): CFLAGS += -fPIC
-$(TARGET): $(OBJECTS)
+$(TARGET): $(OBJECTS) $(DEPS)
 	$(CC) $^ $(CFLAGS) -o $@
 
 build:

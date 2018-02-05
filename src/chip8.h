@@ -3,7 +3,7 @@
 
 void initialize();
 void read_rom(char *path);
-void emulateCycle();
+void emulate_cycle();
 
 
 extern unsigned short opcode;
@@ -21,5 +21,7 @@ extern unsigned short sp;
 
 extern unsigned char gfx[64 * 32];
 extern unsigned char key[16];
+
+extern char draw_flag;
 
 #endif

@@ -41,6 +41,7 @@ unsigned short sp;
 
 unsigned char key[16];
 
+char draw_flag = 0;
 
 
 void initialize()
@@ -74,6 +75,10 @@ void initialize()
 	// Reset timers
 	delay_timer = 0;
 	sound_timer = 0;
+
+	// clear screen
+	draw_flag = 1;
+	srand(time(NULL));
 }
 
 
@@ -116,10 +121,15 @@ error:
 }
 
 
-void emulateCycle()
+int ii = 0;
+void emulate_cycle()
 {
 	// Fetch opcode
 	opcode = memory[pc] << 8 | memory[pc + 1];
+
+	if (ii < 50 || ii % 1000000 == 0)
+		debug("%d: opcode: 0x%x", ii, opcode);
+	ii++;
 
 	// Decode opcode
 	switch(opcode & 0xF000)
@@ -128,7 +138,7 @@ void emulateCycle()
 		case 0x0000: op_0000(opcode); break; // 0x00E0: Clears the screen [OR] 0x00EE: Returns from subroutine
 		case 0x1000: op_1000(opcode); break; // Jumps to address NNN.
 		case 0x2000: op_2000(opcode); break; // Calls subroutine at NNN.
-		case 0x3000: op_3000(opcode); break; //
+		case 0x3000: op_3000(opcode); break; // Skip next instruction if Vx = kk.
 		case 0x4000: op_4000(opcode); break; //
 		case 0x5000: op_5000(opcode); break; //
 		case 0x6000: op_6000(opcode); break; //
@@ -137,11 +147,11 @@ void emulateCycle()
 		case 0x9000: op_9000(opcode); break; //
 
 		case 0xA000: op_A000(opcode); break; // ANNN: Sets I to the address NNN	
-		case 0xB000: op_A000(opcode); break; // 	
-		case 0xC000: op_A000(opcode); break; // 
-		case 0xD000: op_A000(opcode); break; // 
-		case 0xE000: op_A000(opcode); break; // 
-		case 0xF000: op_A000(opcode); break; // 
+		case 0xB000: op_B000(opcode); break; // 	
+		case 0xC000: op_C000(opcode); break; // 
+		case 0xD000: op_D000(opcode); break; // 
+		case 0xE000: op_E000(opcode); break; // 
+		case 0xF000: op_F000(opcode); break; // 
 
 		default:
 			log_warn("Unknown opcode: 0x%X\n", opcode);
@@ -159,8 +169,11 @@ void emulateCycle()
 	}  
 }
 
-void debugRender()
+void debug_render()
 {
+	if (!draw_flag)
+    	return;
+    
     // Draw
     for(int y = 0; y < 32; ++y)
     {
