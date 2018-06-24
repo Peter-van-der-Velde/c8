@@ -3,6 +3,7 @@ simple CHIP-8 emulator
 
 ### TODO:
 * implement FXXX opcodes
+* add basic graphics
 * add pretty picture to readme
 * add sound
 * add gui
