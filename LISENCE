@@ -1,4 +1,4 @@
-/* chip8 -- simple CHIP-8 emulator
+/* c8 -- CHIP-8 emulator
   version 1.2.2, Februari 4rd, 2018
 
   Copyright (C) 2018 Peter van der Velde

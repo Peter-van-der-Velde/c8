@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-g -O2 -Wall -Wextra -Isrc -rdynamic -DNDEBUG $(OPTFLAGS)
+CFLAGS=-g -Wall -Wextra -Isrc -rdynamic $(OPTFLAGS) -I/usr/include/SDL2
 LIBS=-ldl -lSDL2 $(OPTLIBS)
 PREFIX?=/usr/local
 
@@ -13,14 +13,14 @@ TESTS=$(patsubst %.c,%,$(TEST_SRC))
 TARGET=./build/c8
 
 # The Target Build
+all: CFLAGS += -DNDEBUG -O2
 all: build $(TARGET) tests
 
-dev: CFLAGS=-g -Wall -Isrc -Wall -Wextra $(OPTFLAGS)
-dev: all
+dev: CFLAGS += -Os
+dev: build $(TARGET) tests
 
-$(TARGET): CFLAGS += -fPIC
 $(TARGET): $(OBJECTS) $(DEPS)
-	$(CC) $^ $(CFLAGS) -o $@
+	$(CC) $^ $(CFLAGS) $(LIBS) -o $@
 
 build:
 	@mkdir -p build

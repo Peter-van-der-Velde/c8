@@ -1,8 +1,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#include <SDL2/SDL.h>
 #include "dbg.h"
 #include "chip8.h"
+
+#define SCREEN_WIDTH = 640;
+#define SCREEN_HEIGHT = 320;
+
 
 int main(int argc, char *argv[])
 {

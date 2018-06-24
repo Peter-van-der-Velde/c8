@@ -46,9 +46,9 @@ char draw_flag = 0;
 
 void initialize()
 {
-	
+
 	pc     = 0x200;  // Program counter starts at 0x200
-	opcode = 0;      // Reset current opcode	
+	opcode = 0;      // Reset current opcode
 	I      = 0;      // Reset index register
 	sp     = 0;      // Reset stack pointer
 
@@ -70,7 +70,7 @@ void initialize()
 
 	// Load fontset
 	for(int i = 0; i < 80; ++i)
-		memory[i] = chip8_fontset[i];		
+		memory[i] = chip8_fontset[i];
 
 	// Reset timers
 	delay_timer = 0;
@@ -93,14 +93,14 @@ void read_rom(char *path)
 	ptr = fopen(path,"rb");
 	check(ptr, "There was an Error reading the file %s \n", path);
 
-	fseek(ptr, 0, SEEK_END); 
+	fseek(ptr, 0, SEEK_END);
 	size = ftell(ptr);         /*calc the size needed*/
-	fseek(ptr, 0, SEEK_SET); 
+	fseek(ptr, 0, SEEK_SET);
 
 	buffer = malloc(size);  /*allocate space on heap*/
 	check_mem(buffer);
 
-	
+
 	check((fread(buffer, sizeof buffer, size, ptr) != size), "there was an Error reading %s\n", path);
 
 	log_info("Loaded ROM\n");
@@ -117,7 +117,7 @@ void read_rom(char *path)
 error:
 	free(buffer);
 	fclose(ptr);
-	exit(1);	
+	exit(1);
 }
 
 
@@ -133,8 +133,8 @@ void emulate_cycle()
 
 	// Decode opcode
 	switch(opcode & 0xF000)
-	{    
-		
+	{
+
 		case 0x0000: op_0000(opcode); break; // 0x00E0: Clears the screen [OR] 0x00EE: Returns from subroutine
 		case 0x1000: op_1000(opcode); break; // Jumps to address NNN.
 		case 0x2000: op_2000(opcode); break; // Calls subroutine at NNN.
@@ -146,16 +146,16 @@ void emulate_cycle()
 		case 0x8000: op_8000(opcode); break; //
 		case 0x9000: op_9000(opcode); break; //
 
-		case 0xA000: op_A000(opcode); break; // ANNN: Sets I to the address NNN	
-		case 0xB000: op_B000(opcode); break; // 	
-		case 0xC000: op_C000(opcode); break; // 
-		case 0xD000: op_D000(opcode); break; // 
-		case 0xE000: op_E000(opcode); break; // 
-		case 0xF000: op_F000(opcode); break; // 
+		case 0xA000: op_A000(opcode); break; // ANNN: Sets I to the address NNN
+		case 0xB000: op_B000(opcode); break; //
+		case 0xC000: op_C000(opcode); break; //
+		case 0xD000: op_D000(opcode); break; //
+		case 0xE000: op_E000(opcode); break; //
+		case 0xF000: op_F000(opcode); break; //
 
 		default:
 			log_warn("Unknown opcode: 0x%X\n", opcode);
-	}  
+	}
 
 	// Update timers
 	if(delay_timer > 0)
@@ -164,27 +164,7 @@ void emulate_cycle()
 	if(sound_timer > 0)
 	{
 		if(sound_timer == 1)
-			printf("BEEP!\n");
+			log_warn("Need to implement audio, Beep!");
 		--sound_timer;
-	}  
-}
-
-void debug_render()
-{
-	if (!draw_flag)
-    	return;
-    
-    // Draw
-    for(int y = 0; y < 32; ++y)
-    {
-        for(int x = 0; x < 64; ++x)
-        {
-            if(gfx[(y*64) + x] == 0)
-                printf("O");
-            else
-                printf(" ");
-        }
-        printf("\n");
-    }
-    printf("\n");
+	}
 }
