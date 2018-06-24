@@ -2,6 +2,7 @@
 simple CHIP-8 emulator
 
 ### TODO:
+* add basic graphics
 * add pretty picture to readme
 * add sound
 * add gui
