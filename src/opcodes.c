@@ -14,10 +14,9 @@ void op_0000(unsigned short opcode)
 	{
 		// 0x00E0: Clears the screen
 		case 0x0000:
-			// for(int i = 0; i < 2048; ++i)
-				// gfx[i] = 0x0;
 			memset(gfx, 0, sizeof(gfx));
 			draw_flag = 1;
+			pc += 2;
 			break;
 
 		// 0x00EE: Returns from subroutine
@@ -28,7 +27,7 @@ void op_0000(unsigned short opcode)
 			break;
 
 		default:
-			log_warn("Unknown opcode [0x0000]: 0x%X\n", opcode);
+			log_warn("Unknown opcode [0x%X]", opcode);
 	}
 }
 
@@ -36,7 +35,7 @@ void op_0000(unsigned short opcode)
 // Jumps to address NNN.
 void op_1000(unsigned short opcode)
 {
-	pc = 0x0FFF & opcode;
+	pc = opcode & 0x0FFF;
 }
 
 
@@ -111,7 +110,7 @@ void op_7000(unsigned short opcode)
 	unsigned short x = (opcode & 0x0F00) >> (2 * 4);
 	unsigned short kk = opcode & 0x00FF;
 
-	V[x] = kk;
+	V[x] += kk;
 
 	pc += 2;
 }
@@ -128,58 +127,66 @@ void op_8000(unsigned short opcode)
 		case 0x0000: // Set Vx = Vy.
 			V[x] = V[y];
 			break;
+
 		case 0x0001: // Set Vx = Vx OR Vy.
 			V[x] = V[x] | V[y];
 			break;
+
 		case 0x0002: // Set Vx = Vx AND Vy.
 			V[x] = V[x] & V[y];
 			break;
+
 		case 0x0003: // Set Vx = Vx XOR Vy.
 			V[x] = V[x] ^ V[y];
 			break;
+
 		case 0x0004: // Set Vx = Vx + Vy
-			if (V[x] + V[y] > 255)
-				V[15] = 1; // set VF to 1
+			if (V[y] > 0xFF - V[x])
+				V[0xF] = 1; // set VF to 1
 			else
-				V[15] = 0; // set VF to 0
+				V[0xF] = 0; // set VF to 0
 
 			V[x] = V[x] + V[y];
 			break;
+
 		case 0x0005: // Set Vx = Vx - Vy,
 			if (V[x] > V[y])
-				V[15] = 1;
+				V[0xF] = 1;
 			else
-				V[15] = 0;
+				V[0xF] = 0;
 
 			V[x] = V[x] - V[y];
 			break;
-		case 0x0006: // set Vx = Vx / 2;
-			if ((V[x] & 0x0001) == 0x0001) // If the least-significant bit of Vx is 1
-				V[15] = 1;
-			else
-				V[15] = 0;
 
-			V[x] = V[x] / 2;
-			break;
-		case 0x0007: // substract x from y (y - -x)
-			if (V[x] < V[y])
-				V[15] = 1;
+		case 0x0006: // set Vx = Vx SHL 1;
+			if ((V[x] & 0x0001) == 0x0001) // If the least-significant bit of Vx is 1
+				V[0xF] = 1;
 			else
-				V[15] = 0;
+				V[0xF] = 0;
+
+			V[x] = V[x] >> 1;
+			break;
+
+		case 0x0007: // substract x from y (y - x)
+			if (V[x] < V[y])
+				V[0xF] = 1;
+			else
+				V[0xF] = 0;
 
 			V[x] = V[y]	- V[x];
 			break;
+
 		case 0x000E: // multipy Vx by 2
 			if ((V[x] & 0x8000) == 0x8000) // If the most-significant bit of Vx is 1
-				V[15] = 1;
+				V[0xF] = 1;
 			else
-				V[15] = 0;
+				V[0xF] = 0;
 
-			V[x] = V[x] * 2;
+			V[x] = V[x] << 1;
 			break;
 
 		default:
-			log_warn("Unknown opcode [0x8000]: 0x%X\n", opcode);
+			log_warn("Unknown opcode [0x%X]", opcode);
 			break;
 	}
 
@@ -226,7 +233,7 @@ void op_C000(unsigned short opcode)
 {
 	unsigned short x = (opcode & 0x0F00) >> (2 * 4);
 	unsigned short kk = opcode & 0x00FF;
-	unsigned short r = rand() % 256;
+	unsigned short r = rand() % 0xFF;
 
 	V[x] = r & kk;
 
@@ -238,26 +245,27 @@ void op_C000(unsigned short opcode)
 // Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision.
 void op_D000(unsigned short opcode)
 {
-	unsigned short x = V[(opcode & 0x0F00) >> 8];
-	unsigned short y = V[(opcode & 0x00F0) >> 4];
-	unsigned short Vx = V[x];
-	unsigned short Vy = V[y];
+	unsigned short x = V[((opcode & 0x0F00) >> 8)];
+	unsigned short y = V[((opcode & 0x00F0) >> 4)];
 	unsigned short height = opcode & 0x000F;
 	unsigned short pixel;
 
-	V[15] = 0;
-	for (int yline = 0; yline < height; yline++)
-	{
+	V[0xF] = 0;
+	for (unsigned char yline = 0; yline < height; yline++) {
 		pixel = memory[I + yline];
-		for(int xline = 0; xline < 8; xline++)
-		{
-			if((pixel & (0x80 >> xline)) != 0) // check if pixel value is 1
-			{
-				if(gfx[(Vx + xline + ((Vy + yline) * 64))] == 1)
-				{
-					V[15] = 1;
+
+		for(unsigned char xline = 0; xline < 8; xline++) {
+
+			if((pixel & (0x80 >> xline)) != 0) { // check if pixel value is 1
+
+				if (x + xline > SCREEN_WIDTH || y + yline > SCREEN_WIDTH) { // check if x or y is out of bounds
+					log_warn("game tried to acces out of bounds values");
+					return;
 				}
-				gfx[Vx + xline + ((Vy + yline) * 64)] ^= 1;
+				if(gfx[(x + xline + ((y + yline) * 64))] == 1) {
+					V[0xF] = 1;
+				}
+				gfx[x + xline + ((y + yline) * 64)] ^= 1;
 			}
 		}
 	}
@@ -267,6 +275,7 @@ void op_D000(unsigned short opcode)
 }
 
 
+// EX00
 void op_E000(unsigned short opcode)
 {
 	unsigned short x = (opcode & 0x0F00) >> 8;
@@ -288,16 +297,100 @@ void op_E000(unsigned short opcode)
 			break;
 
 		default:
-			log_warn("Unknown opcode [0xE000]: 0x%X\n", opcode);
+			log_warn("Unknown opcode [0x%X]", opcode);
 			break;
 	}
 
 }
 
-
+// FX00
 void op_F000(unsigned short opcode)
 {
-	log_warn("Unknown opcode [0x0000]: 0x%X\n", opcode);
+	unsigned short x = (opcode & 0x0F00) >> 8;
+	int key_press = 0;
+
+
+	switch(opcode & 0x00FF)
+	{
+		case 0x0007: // FX07: Set Vx = delay timer value.
+			V[x] = delay_timer;
+
+			pc += 2;
+			break;
+
+		case 0x000A: // FX0A: Wait for a key press, store the value of the key in Vx.
+			for(int i = 0; i < 0xF; i++) {
+				if(key[i] != 0) {
+					V[x] = i;
+					key_press = 1;
+				}
+			}
+
+			if (!key_press)
+				return;
+
+			pc += 2;
+			break;
+
+		case 0x0015: // FX15: Set delay timer = Vx.
+			delay_timer = V[x];
+
+			pc += 2;
+			break;
+
+		case 0x0018: // FX18: Set sound timer = Vx.
+			sound_timer = V[x];
+
+			pc += 2;
+			break;
+
+		case 0x001E: // FX1E: The values of I and Vx are added, and the results are stored in I.
+			if(V[x] + I > 0xFFF)
+				V[0xF] = 1;
+			else
+				V[0xF] = 0;
+
+			I = I + V[x];
+			pc += 2;
+			break;
+
+		case 0x0029: // FX29: Set I = location of sprite for digit Vx.
+			I = V[x] * 0x5;
+
+			pc += 2;
+			break;
+
+		case 0x0033: // FX33: Store BCD representation of Vx in memory locations I, I+1, and I+2.
+			memory[I] = V[x] / 100;
+			memory[I+1] = (V[x] /10) % 10;
+			memory[I+2] = (V[x] % 100) % 10;
+			pc += 2;
+			break;
+
+		case 0x0055: // FX55: Store registers V0 through Vx in memory starting at location I.
+			for (int i = 0; i <= x; i++) {
+				memory[i + I] = V[i];
+			}
+
+			if (ORIGINAL_0xF065_LOGIC)
+				I = I + V[x] + 1;
+			pc += 2;
+			break;
+
+		case 0x0065: // FX65: Read registers V0 through Vx from memory starting at location I.
+			for (int i = 0; i <= x; i++) {
+				V[i] = memory[i + I];
+			}
+
+			if (ORIGINAL_0xF065_LOGIC)
+				I = I + V[x] + 1;
+			pc += 2;
+			break;
+
+		default:
+			log_warn("Unknown opcode [0x%X]", opcode);
+			break;
+	}
 
 	pc += 2;
 }

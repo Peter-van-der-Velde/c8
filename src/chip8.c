@@ -43,6 +43,7 @@ unsigned char key[16];
 
 char draw_flag = 0;
 
+int original_0xF065_logic;
 
 void initialize()
 {
@@ -79,6 +80,9 @@ void initialize()
 	// clear screen
 	draw_flag = 1;
 	srand(time(NULL));
+
+	// init
+	original_0xF065_logic;
 }
 
 
@@ -101,11 +105,11 @@ void read_rom(char *path)
 	check_mem(buffer);
 
 
-	check((fread(buffer, sizeof buffer, size, ptr) != size), "there was an Error reading %s\n", path);
+	check((fread(buffer, sizeof buffer, size, ptr) != size), "there was an Error reading %s", path);
 
 	log_info("Loaded ROM\n");
 
-	for(int i = 0; i < size; ++i)
+	for(u_int i = 0; i < size; ++i)
 		memory[i + 512] = buffer[i];
 
 	// clean up
@@ -154,7 +158,7 @@ void emulate_cycle()
 		case 0xF000: op_F000(opcode); break; //
 
 		default:
-			log_warn("Unknown opcode: 0x%X\n", opcode);
+			log_warn("Unknown opcode: [0x%X]\n", opcode);
 	}
 
 	// Update timers

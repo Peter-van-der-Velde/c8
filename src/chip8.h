@@ -1,10 +1,13 @@
 #ifndef _memory_h
 #define _memory_h
 
+#define SCREEN_WIDTH 640
+#define SCREEN_HEIGHT 320
+#define ORIGINAL_0xF065_LOGIC 1
+
 void initialize();
 void read_rom(char *path);
 void emulate_cycle();
-
 
 extern unsigned short opcode;
 extern unsigned char memory[4096];

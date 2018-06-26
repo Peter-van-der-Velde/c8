@@ -5,15 +5,12 @@
 #include "dbg.h"
 #include "chip8.h"
 
-#define SCREEN_WIDTH = 640;
-#define SCREEN_HEIGHT = 320;
-
 
 int main(int argc, char *argv[])
 {
 
 	if(argc < 2) {
-		printf("no file was specified\n");
+		log_err("no file was specified");
 		return 1;
 	}
 
@@ -25,6 +22,8 @@ int main(int argc, char *argv[])
 		if (i % 10000 == 0)
 			debug("cycle: %d", i++);
 		emulate_cycle();
+		if (draw_flag)
+			render();
 	}
 
 	return 0;

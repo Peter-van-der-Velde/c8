@@ -1,13 +1,5 @@
 # c8
-simple CHIP-8 emulator
-
-### TODO:
-* implement FXXX opcodes
-* add basic graphics
-* add pretty picture to readme
-* add sound
-* add gui
-* port to w32
+simple CHIP-8 emulator writtwn in C
 
 ### Prerequisites
 to build this project you will need the following programs installed:
