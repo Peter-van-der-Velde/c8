@@ -1,5 +1,5 @@
 # c8
-simple CHIP-8 emulator writtwn in C
+a CHIP-8 emulator written in C (WIP)
 
 ### Prerequisites
 to build this project you will need the following programs installed:
