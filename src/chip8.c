@@ -161,7 +161,11 @@ void emulate_cycle()
 			log_warn("Unknown opcode: [0x%X]\n", opcode);
 	}
 
-	// Update timers
+
+}
+
+void update_timers()
+{
 	if(delay_timer > 0)
 		--delay_timer;
 

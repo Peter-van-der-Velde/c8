@@ -1,6 +1,9 @@
 #ifndef _memory_h
 #define _memory_h
 
+#define CHIP_8_SCREEN_WIDTH 64
+#define CHIP_8_SCREEN_HEIGHT 32
+
 #define SCREEN_WIDTH 640
 #define SCREEN_HEIGHT 320
 #define ORIGINAL_0xF065_LOGIC 1
@@ -8,6 +11,7 @@
 void initialize();
 void read_rom(char *path);
 void emulate_cycle();
+void update_timers();
 
 extern unsigned short opcode;
 extern unsigned char memory[4096];
