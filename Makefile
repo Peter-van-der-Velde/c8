@@ -14,10 +14,10 @@ TARGET=./build/c8
 
 # The Target Build
 all: CFLAGS += -DNDEBUG -O2
-all: build $(TARGET) tests
+all: build $(TARGET)
 
 dev: CFLAGS += -Os
-dev: build $(TARGET) tests
+dev: build $(TARGET)
 
 $(TARGET): $(OBJECTS) $(DEPS)
 	$(CC) $^ $(CFLAGS) $(LIBS) -o $@

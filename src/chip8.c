@@ -43,7 +43,7 @@ unsigned char key[16];
 
 char draw_flag = 0;
 
-int original_0xF065_logic;
+int original_0xF065_logic = 1;
 
 void initialize()
 {
@@ -81,8 +81,8 @@ void initialize()
 	draw_flag = 1;
 	srand(time(NULL));
 
-	// init
-	original_0xF065_logic;
+	// // init
+	// original_0xF065_logic;
 }
 
 
@@ -107,7 +107,7 @@ void read_rom(char *path)
 
 	check((fread(buffer, sizeof buffer, size, ptr) != size), "there was an Error reading %s", path);
 
-	log_info("Loaded ROM\n");
+	log_info("Loaded ROM");
 
 	for(u_int i = 0; i < size; ++i)
 		memory[i + 512] = buffer[i];
