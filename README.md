@@ -1,5 +1,6 @@
 # c8
 ![Space Invaders on the CHIP-8](https://i.imgur.com/JpmZhAc.png)
+
 a CHIP-8 emulator written in C (WIP)
 
 ### Prerequisites
