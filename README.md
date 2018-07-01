@@ -1,5 +1,5 @@
 # c8
-[Maze (alt)](https://i.imgur.com/97nuSsf.png)
+[Maze](https://i.imgur.com/97nuSsf.png)
 a CHIP-8 emulator written in C (WIP)
 
 ### Prerequisites
