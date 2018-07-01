@@ -7,6 +7,7 @@
 #define SCREEN_WIDTH 640
 #define SCREEN_HEIGHT 320
 #define ORIGINAL_0xF065_LOGIC 1
+#define NUMBER_OF_KEYS 16
 
 void initialize();
 void read_rom(char *path);
@@ -27,7 +28,7 @@ extern unsigned short stack[16];
 extern unsigned short sp;
 
 extern unsigned char gfx[64 * 32];
-extern unsigned char key[16];
+extern unsigned char key[NUMBER_OF_KEYS];
 
 extern char draw_flag;
 

@@ -125,15 +125,10 @@ error:
 }
 
 
-int ii = 0;
 void emulate_cycle()
 {
 	// Fetch opcode
 	opcode = memory[pc] << 8 | memory[pc + 1];
-
-	if (ii < 50 || ii % 1000000 == 0)
-		debug("%d: opcode: 0x%x", ii, opcode);
-	ii++;
 
 	// Decode opcode
 	switch(opcode & 0xF000)

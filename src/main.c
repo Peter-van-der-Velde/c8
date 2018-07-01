@@ -36,24 +36,14 @@ int sdl_init()
 		}
 		else {
 			//Create renderer for window
-			renderer = SDL_CreateRenderer(c8_window, -1, SDL_RENDERER_ACCELERATED);
-			if(renderer == NULL)
-			{
+			renderer = SDL_CreateRenderer(c8_window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+			if(renderer == NULL) {
 				log_err("Renderer could not be created! SDL Error: %s", SDL_GetError());
 				success = 0;
 			}
-			else
-			{
+			else {
 				//Initialize renderer color
 				SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
-
-				// //Initialize PNG loading
-				// int imgFlags = IMG_INIT_PNG;
-				// if( !( IMG_Init( imgFlags ) & imgFlags ) )
-				// {
-				// 	printf( "SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError() );
-				// 	success = false;
-				// }
 			}
 		}
 	}
@@ -207,7 +197,6 @@ int main(int argc, char *argv[])
 			emulate_cycle();
 			if (draw_flag) {
 				draw_gfx();
-
 			}
 
 			update_timers();

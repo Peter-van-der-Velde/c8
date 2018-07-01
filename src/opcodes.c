@@ -10,17 +10,17 @@
 */
 void op_0000(unsigned short opcode)
 {
-	switch(opcode & 0x000F)
+	switch(opcode & 0x00FF)
 	{
 		// 0x00E0: Clears the screen
-		case 0x0000:
+		case 0x00E0:
 			memset(gfx, 0, sizeof(gfx));
 			draw_flag = 1;
 			pc += 2;
 			break;
 
 		// 0x00EE: Returns from subroutine
-		case 0x000E:
+		case 0x00EE:
 			sp--;
 			pc = stack[sp];
 			pc += 2; // go to the next instruction
@@ -141,7 +141,7 @@ void op_8000(unsigned short opcode)
 			break;
 
 		case 0x0004: // Set Vx = Vx + Vy
-			if (V[y] > 0xFF - V[x])
+			if (V[x] + V[y] > 0xFF)
 				V[0xF] = 1; // set VF to 1
 			else
 				V[0xF] = 0; // set VF to 0
@@ -177,7 +177,7 @@ void op_8000(unsigned short opcode)
 			break;
 
 		case 0x000E: // multipy Vx by 2
-			if ((V[x] & 0x8000) == 0x8000) // If the most-significant bit of Vx is 1
+			if ((V[x] & 0x80) == 0x80) // If the most-significant bit of Vx is 1
 				V[0xF] = 1;
 			else
 				V[0xF] = 0;
@@ -319,7 +319,7 @@ void op_F000(unsigned short opcode)
 			break;
 
 		case 0x000A: // FX0A: Wait for a key press, store the value of the key in Vx.
-			for(int i = 0; i < 0xF; i++) {
+			for(int i = 0; i < NUMBER_OF_KEYS; i++) {
 				if(key[i] != 0) {
 					V[x] = i;
 					key_press = 1;
@@ -391,6 +391,4 @@ void op_F000(unsigned short opcode)
 			log_warn("Unknown opcode [0x%X]", opcode);
 			break;
 	}
-
-	pc += 2;
 }
