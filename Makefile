@@ -41,8 +41,8 @@ clean:
 
 # The Install
 install: all
-	install -d $(DESTDIR)/$(PREFIX)/lib/
-	install $(TARGET) $(DESTDIR)/$(PREFIX)/lib/
+	install -d $(DESTDIR)/$(PREFIX)/bin/
+	install $(TARGET) $(DESTDIR)/$(PREFIX)/bin/
 
 # The Checker
 check:
