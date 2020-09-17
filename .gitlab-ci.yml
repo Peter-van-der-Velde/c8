@@ -1,0 +1,19 @@
+image: gcc
+
+stages:
+  - compile
+  - test
+
+compile:
+  stage: compile
+  before_script:
+    - apt update && apt -y install make autoconf libsdl2-dev
+  script: make
+  artifacts:
+  cache:
+    paths:
+    - "*.o"
+
+test:
+  stage: test
+  script: make tests
